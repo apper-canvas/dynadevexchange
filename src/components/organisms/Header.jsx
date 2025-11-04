@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
-import SearchBar from "@/components/molecules/SearchBar";
 import AuthModal from "@/components/organisms/AuthModal";
+import SearchBar from "@/components/molecules/SearchBar";
 
 const Header = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -20,11 +20,7 @@ const Header = () => {
 
   const handleAskQuestion = () => {
     // Check if user is authenticated
-    const isAuthenticated = false; // This would come from auth context
-    if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
-      return;
-    }
+// Navigation handled by route protection
     navigate("/ask");
   };
 
@@ -99,15 +95,18 @@ const Header = () => {
                 <ApperIcon name="Plus" size={24} />
               </motion.button>
 
-              {/* Login Button */}
-              <Button
-                variant="secondary"
-                size="default"
-                onClick={() => setIsAuthModalOpen(true)}
-                className="hidden sm:flex"
-              >
-                Log in
-              </Button>
+{/* Login Button */}
+              <div className="hidden sm:flex items-center gap-3">
+                <Link to="/login">
+                  <Button
+                    variant="secondary"
+                    size="default"
+                    className="hidden sm:flex"
+                  >
+                    Log in
+                  </Button>
+                </Link>
+              </div>
 
               {/* Mobile Menu Button */}
               <button
@@ -152,17 +151,17 @@ const Header = () => {
                   </Link>
                 ))}
                 
-                <Button
-                  variant="secondary"
-                  size="default"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="w-full mt-4"
-                >
-                  Log in
-                </Button>
+<div className="flex flex-col gap-2 mt-4">
+                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Button
+                      variant="secondary"
+                      size="default"
+                      className="w-full"
+                    >
+                      Log in
+                    </Button>
+                  </Link>
+                </div>
               </nav>
             </motion.div>
           )}

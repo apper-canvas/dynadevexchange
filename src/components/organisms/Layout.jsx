@@ -1,13 +1,14 @@
 import { Outlet, useOutletContext } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { useAuth } from "@/layouts/Root";
 import Header from "@/components/organisms/Header";
 
 function Layout() {
+  const { logout } = useAuth();
+  
   // App-level state and methods that need to be shared across routes
-  // Currently no shared state identified, but structure ready for future needs
   const outletContext = {
-    // Add shared state and methods here as needed
-    // Example: user, setUser, notifications, etc.
+    logout
   };
 
   return (

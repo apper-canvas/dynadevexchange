@@ -86,8 +86,8 @@ const AnswerList = ({
               <div className="flex-shrink-0">
                 <VoteControls
                   votes={answer.votes}
-                  onVote={(voteValue) => handleVote(answer.Id, voteValue)}
-                  showAccept={questionAuthorId === "current-user-id"} // This would come from auth context
+onVote={(voteValue) => handleVote(answer.Id, voteValue)}
+                  showAccept={questionAuthorId === "current-user-id"} // Would come from authenticated user
                   isAccepted={answer.isAccepted}
                   onAccept={() => handleAcceptAnswer(answer.Id)}
                   vertical={true}

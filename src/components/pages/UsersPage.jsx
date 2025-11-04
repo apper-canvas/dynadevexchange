@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import userService from "@/services/api/userService";
 import ApperIcon from "@/components/ApperIcon";
-import Card from "@/components/atoms/Card";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
+import Card from "@/components/atoms/Card";
 import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import userService from "@/services/api/userService";
+import Error from "@/components/ui/Error";
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -20,7 +20,7 @@ const UsersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 36;
 
-  const loadUsers = async () => {
+const loadUsers = async () => {
     try {
       setLoading(true);
       setError("");

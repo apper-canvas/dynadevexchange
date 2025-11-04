@@ -1,106 +1,282 @@
-import usersData from "@/services/mockData/users.json";
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+import { getApperClient } from "@/services/apperClient";
+import { toast } from "react-toastify";
 
 class UserService {
   constructor() {
-    this.users = [...usersData];
+    this.tableName = "user_c";
   }
 
   async getAll() {
-    await delay(300);
-    return [...this.users];
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.fetchRecords(this.tableName, {
+        fields: [
+          {"field": {"Name": "username_c"}},
+          {"field": {"Name": "email_c"}},
+          {"field": {"Name": "reputation_c"}},
+          {"field": {"Name": "badges_c"}},
+          {"field": {"Name": "joined_at_c"}}
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      return response.data.map(user => ({
+        Id: user.Id,
+        username: user.username_c || '',
+        displayName: user.username_c || '',
+        email: user.email_c || '',
+        reputation: user.reputation_c || 1,
+        badges: this.parseBadges(user.badges_c),
+        joinedAt: user.joined_at_c || new Date().toISOString(),
+        joinDate: user.joined_at_c || new Date().toISOString(),
+        questionIds: [],
+        answerIds: []
+      }));
+    } catch (error) {
+      console.error("Error fetching users:", error?.response?.data?.message || error);
+      return [];
+    }
   }
 
-async getById(id) {
-    await delay(200);
-    
-    // Handle both string and numeric IDs
-    if (!id && id !== 0) {
-      throw new Error("Invalid user ID provided");
-    }
-    
-    const searchId = typeof id === 'number' ? `user${id}` : id;
-    const user = this.users.find(u => u.Id === searchId || u.Id === id);
-    
-    if (!user) {
+  async getById(id) {
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.getRecordById(this.tableName, id, {
+        fields: [
+          {"field": {"Name": "username_c"}},
+          {"field": {"Name": "email_c"}},
+          {"field": {"Name": "reputation_c"}},
+          {"field": {"Name": "badges_c"}},
+          {"field": {"Name": "joined_at_c"}}
+        ]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        throw new Error(`User with ID '${id}' not found`);
+      }
+
+      const user = response.data;
+      return {
+        Id: user.Id,
+        username: user.username_c || '',
+        displayName: user.username_c || '',
+        email: user.email_c || '',
+        reputation: user.reputation_c || 1,
+        badges: this.parseBadges(user.badges_c),
+        joinedAt: user.joined_at_c || new Date().toISOString(),
+        joinDate: user.joined_at_c || new Date().toISOString(),
+        questionsAsked: 0,
+        answersProvided: 0,
+        acceptedAnswers: 0
+      };
+    } catch (error) {
+      console.error(`Error fetching user ${id}:`, error?.response?.data?.message || error);
       throw new Error(`User with ID '${id}' not found`);
     }
-    
-    return { ...user };
   }
 
   async getByUsername(username) {
-    await delay(250);
-    const user = this.users.find(u => u.username.toLowerCase() === username.toLowerCase());
-    if (!user) {
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.fetchRecords(this.tableName, {
+        fields: [
+          {"field": {"Name": "username_c"}},
+          {"field": {"Name": "email_c"}},
+          {"field": {"Name": "reputation_c"}},
+          {"field": {"Name": "badges_c"}},
+          {"field": {"Name": "joined_at_c"}}
+        ],
+        where: [{"FieldName": "username_c", "Operator": "EqualTo", "Values": [username]}]
+      });
+
+      if (!response.success || !response.data || response.data.length === 0) {
+        throw new Error("User not found");
+      }
+
+      const user = response.data[0];
+      return {
+        Id: user.Id,
+        username: user.username_c || '',
+        displayName: user.username_c || '',
+        email: user.email_c || '',
+        reputation: user.reputation_c || 1,
+        badges: this.parseBadges(user.badges_c),
+        joinedAt: user.joined_at_c || new Date().toISOString(),
+        joinDate: user.joined_at_c || new Date().toISOString()
+      };
+    } catch (error) {
+      console.error("Error fetching user by username:", error?.response?.data?.message || error);
       throw new Error("User not found");
     }
-    return { ...user };
   }
 
   async create(userData) {
-    await delay(400);
-    const maxId = Math.max(...this.users.map(u => parseInt(u.Id.replace('user', '') || '0')), 0);
-    const newUser = {
-      ...userData,
-      Id: `user${maxId + 1}`,
-      reputation: 1,
-      badges: [{ name: "Student", type: "bronze" }],
-      joinedAt: new Date().toISOString(),
-      questionIds: [],
-      answerIds: [],
-    };
-    
-    this.users.push(newUser);
-    return { ...newUser };
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.createRecord(this.tableName, {
+        records: [{
+          username_c: userData.username || '',
+          email_c: userData.email || '',
+          reputation_c: 1,
+          badges_c: JSON.stringify([{ name: "Student", type: "bronze" }]),
+          joined_at_c: new Date().toISOString()
+        }]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return null;
+      }
+
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to create ${failed.length} users:`, failed);
+          failed.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+        }
+
+        if (successful.length > 0) {
+          const createdUser = successful[0].data;
+          return {
+            Id: createdUser.Id,
+            username: createdUser.username_c || '',
+            displayName: createdUser.username_c || '',
+            email: createdUser.email_c || '',
+            reputation: createdUser.reputation_c || 1,
+            badges: this.parseBadges(createdUser.badges_c),
+            joinedAt: createdUser.joined_at_c || new Date().toISOString(),
+            questionIds: [],
+            answerIds: []
+          };
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error("Error creating user:", error?.response?.data?.message || error);
+      return null;
+    }
   }
 
   async update(id, updateData) {
-    await delay(300);
-    const index = this.users.findIndex(u => u.Id === id);
-    if (index === -1) {
+    try {
+      const apperClient = getApperClient();
+      const updateRecord = {
+        Id: id
+      };
+
+      if (updateData.username) updateRecord.username_c = updateData.username;
+      if (updateData.email) updateRecord.email_c = updateData.email;
+      if (updateData.reputation !== undefined) updateRecord.reputation_c = updateData.reputation;
+      if (updateData.badges) updateRecord.badges_c = JSON.stringify(updateData.badges);
+
+      const response = await apperClient.updateRecord(this.tableName, {
+        records: [updateRecord]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        throw new Error("User not found");
+      }
+
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to update ${failed.length} users:`, failed);
+          failed.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+          throw new Error("User not found");
+        }
+
+        if (successful.length > 0) {
+          const updatedUser = successful[0].data;
+          return {
+            Id: updatedUser.Id,
+            username: updatedUser.username_c || '',
+            displayName: updatedUser.username_c || '',
+            email: updatedUser.email_c || '',
+            reputation: updatedUser.reputation_c || 1,
+            badges: this.parseBadges(updatedUser.badges_c),
+            joinedAt: updatedUser.joined_at_c || new Date().toISOString()
+          };
+        }
+      }
+      throw new Error("User not found");
+    } catch (error) {
+      console.error("Error updating user:", error?.response?.data?.message || error);
       throw new Error("User not found");
     }
-    
-    this.users[index] = {
-      ...this.users[index],
-      ...updateData,
-    };
-    
-    return { ...this.users[index] };
   }
 
   async delete(id) {
-    await delay(250);
-    const index = this.users.findIndex(u => u.Id === id);
-    if (index === -1) {
+    try {
+      const apperClient = getApperClient();
+      const response = await apperClient.deleteRecord(this.tableName, {
+        RecordIds: [id]
+      });
+
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        throw new Error("User not found");
+      }
+
+      if (response.results) {
+        const successful = response.results.filter(r => r.success);
+        const failed = response.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to delete ${failed.length} users:`, failed);
+          failed.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+          throw new Error("User not found");
+        }
+
+        return successful.length > 0;
+      }
+      throw new Error("User not found");
+    } catch (error) {
+      console.error("Error deleting user:", error?.response?.data?.message || error);
       throw new Error("User not found");
     }
-    
-    const deleted = this.users.splice(index, 1)[0];
-    return { ...deleted };
   }
 
   async updateReputation(id, points) {
-    await delay(150);
-    const user = this.users.find(u => u.Id === id);
-    if (!user) {
+    try {
+      const user = await this.getById(id);
+      const newReputation = Math.max(0, (user.reputation || 0) + points);
+      
+      // Award badges based on reputation milestones
+      const updatedBadges = this.checkAndAwardBadges(user.badges || [], newReputation);
+      
+      return await this.update(id, {
+        reputation: newReputation,
+        badges: updatedBadges
+      });
+    } catch (error) {
+      console.error("Error updating reputation:", error?.response?.data?.message || error);
       throw new Error("User not found");
     }
-    
-    user.reputation += points;
-    user.reputation = Math.max(0, user.reputation); // Don't go below 0
-    
-    // Award badges based on reputation milestones
-    this.checkAndAwardBadges(user);
-    
-    return { ...user };
   }
 
-  checkAndAwardBadges(user) {
-    const badges = user.badges || [];
-    const reputation = user.reputation;
+  checkAndAwardBadges(currentBadges, reputation) {
+    const badges = [...(currentBadges || [])];
     
     // Bronze badges
     if (reputation >= 100 && !badges.some(b => b.name === "Supporter")) {
@@ -125,34 +301,17 @@ async getById(id) {
       badges.push({ name: "Guru", type: "gold" });
     }
     
-    user.badges = badges;
+    return badges;
   }
 
-  async login(email, password) {
-    await delay(500);
-    const user = this.users.find(u => u.email === email);
-    if (!user) {
-      throw new Error("Invalid credentials");
+  parseBadges(badgesStr) {
+    try {
+      if (!badgesStr) return [{ name: "Student", type: "bronze" }];
+      const parsed = JSON.parse(badgesStr);
+      return Array.isArray(parsed) ? parsed : [{ name: "Student", type: "bronze" }];
+    } catch {
+      return [{ name: "Student", type: "bronze" }];
     }
-    
-    // In a real app, you'd verify the password hash
-    return { ...user };
-  }
-
-  async register(userData) {
-    await delay(600);
-    
-    // Check if username or email already exists
-    const existingUser = this.users.find(u => 
-      u.username.toLowerCase() === userData.username.toLowerCase() ||
-      u.email.toLowerCase() === userData.email.toLowerCase()
-    );
-    
-    if (existingUser) {
-      throw new Error("Username or email already exists");
-    }
-    
-    return await this.create(userData);
   }
 }
 

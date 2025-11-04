@@ -1,7 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import ApperIcon from "@/components/ApperIcon";
 import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
 
 const VoteControls = ({ 
   votes = 0, 
@@ -15,14 +15,8 @@ const VoteControls = ({
   const [currentVotes, setCurrentVotes] = useState(votes);
   const [currentUserVote, setCurrentUserVote] = useState(userVote);
 
-  const handleVote = async (value) => {
-    // Check if user is authenticated
-    const isAuthenticated = false; // This would come from auth context
-    if (!isAuthenticated) {
-      toast.error("Please log in to vote");
-      return;
-    }
-
+const handleVote = async (value) => {
+    // Authentication handled by route protection
     const oldVote = currentUserVote;
     const newVote = currentUserVote === value ? 0 : value;
     const voteDiff = newVote - oldVote;
@@ -42,13 +36,8 @@ const VoteControls = ({
     }
   };
 
-  const handleAccept = async () => {
-    const isAuthenticated = false; // This would come from auth context
-    if (!isAuthenticated) {
-      toast.error("Please log in to accept answers");
-      return;
-    }
-
+const handleAccept = async () => {
+    // Authentication handled by route protection
     try {
       await onAccept?.();
       toast.success(isAccepted ? "Answer unaccepted" : "Answer accepted!");

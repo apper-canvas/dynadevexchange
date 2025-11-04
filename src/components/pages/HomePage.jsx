@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
+import AuthModal from "@/components/organisms/AuthModal";
 import QuestionList from "@/components/organisms/QuestionList";
 import FilterSidebar from "@/components/organisms/FilterSidebar";
-import AuthModal from "@/components/organisms/AuthModal";
 
 const HomePage = () => {
   const location = useLocation();
@@ -71,17 +71,11 @@ const HomePage = () => {
     navigate(`${location.pathname}${newSearch ? `?${newSearch}` : ""}`, { replace: true });
   };
 
-  const handleAskQuestion = () => {
-    // Check if user is authenticated
-    const isAuthenticated = false; // This would come from auth context
-    if (!isAuthenticated) {
-      setIsAuthModalOpen(true);
-      return;
-    }
+const handleAskQuestion = () => {
     navigate("/ask");
   };
 
-  const totalQuestions = 1247; // This would come from API
+const totalQuestions = 1247; // This would come from database
   const activeFiltersCount = activeTags.length + (searchQuery ? 1 : 0);
 
   return (

@@ -108,21 +108,17 @@ const AskQuestionForm = () => {
     }
 
     // Check if user is authenticated
-    const isAuthenticated = false; // This would come from auth context
-    if (!isAuthenticated) {
-      toast.error("Please log in to ask a question");
-      return;
-    }
+// Authentication handled by route protection
 
     setIsSubmitting(true);
     
     try {
-      const questionData = {
+const questionData = {
         title: formData.title.trim(),
         body: formData.body.trim(),
         tags: formData.tags,
-        authorId: "current-user-id", // This would come from auth context
-        authorName: "Current User", // This would come from auth context
+        authorId: "current-user-id", // Would come from authenticated user
+        authorName: "Current User", // Would come from authenticated user
         authorReputation: 1,
         votes: 0,
         answerCount: 0,

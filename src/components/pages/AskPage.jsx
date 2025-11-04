@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import AskQuestionForm from "@/components/organisms/AskQuestionForm";
-import AuthModal from "@/components/organisms/AuthModal";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
+import AuthModal from "@/components/organisms/AuthModal";
+import AskQuestionForm from "@/components/organisms/AskQuestionForm";
 const AskPage = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const isAuthenticated = false; // This would come from auth context
 
-  // Show auth modal if user is not authenticated
   if (!isAuthenticated) {
     return (
       <>
@@ -37,10 +36,10 @@ const AskPage = () => {
             </Button>
           </motion.div>
         </div>
-
-        <AuthModal
-          isOpen={isAuthModalOpen}
+        <AuthModal 
+          isOpen={isAuthModalOpen} 
           onClose={() => setIsAuthModalOpen(false)}
+          onAuthSuccess={() => setIsAuthenticated(true)}
         />
       </>
     );
@@ -48,7 +47,7 @@ const AskPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AskQuestionForm />
       </div>
     </div>

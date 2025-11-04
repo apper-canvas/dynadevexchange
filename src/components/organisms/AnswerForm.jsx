@@ -21,20 +21,16 @@ const AnswerForm = ({ questionId, onSubmit, onCancel }) => {
     }
 
     // Check if user is authenticated
-    const isAuthenticated = false; // This would come from auth context
-    if (!isAuthenticated) {
-      toast.error("Please log in to post an answer");
-      return;
-    }
+// Authentication handled by route protection
 
     setIsSubmitting(true);
     
     try {
-      const answerData = {
+const answerData = {
         questionId,
         body: body.trim(),
-        authorId: "current-user-id", // This would come from auth context
-        authorName: "Current User", // This would come from auth context
+        authorId: "current-user-id", // Would come from authenticated user
+        authorName: "Current User", // Would come from authenticated user
         authorReputation: 1,
         votes: 0,
         isAccepted: false,

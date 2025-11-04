@@ -1,15 +1,15 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import tagService from "@/services/api/tagService";
 import ApperIcon from "@/components/ApperIcon";
-import Card from "@/components/atoms/Card";
+import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
-import Badge from "@/components/atoms/Badge";
+import Card from "@/components/atoms/Card";
 import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import tagService from "@/services/api/tagService";
+import Error from "@/components/ui/Error";
 
 const TagsPage = () => {
   const [tags, setTags] = useState([]);
@@ -21,7 +21,7 @@ const TagsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const tagsPerPage = 36;
 
-  const loadTags = async () => {
+const loadTags = async () => {
     try {
       setLoading(true);
       setError("");
@@ -45,7 +45,7 @@ const TagsPage = () => {
     let filtered = [...tags];
     
     // Apply search filter
-    if (searchQuery) {
+if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(tag => 
         tag.name.toLowerCase().includes(query) ||
@@ -183,7 +183,7 @@ const TagsPage = () => {
                           variant="primary" 
                           className="self-start mb-3 text-base px-4 py-2"
                         >
-                          {tag.name}
+{tag.name}
                         </Badge>
 
                         <p className="text-sm text-gray-600 mb-4 flex-1 line-clamp-3">
