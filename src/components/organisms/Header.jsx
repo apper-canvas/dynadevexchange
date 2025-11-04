@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { useAuth } from "@/layouts/Root";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
 import AuthModal from "@/components/organisms/AuthModal";
 import SearchBar from "@/components/molecules/SearchBar";
-
 const Header = () => {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const { logout } = useAuth();
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const location = useLocation();
-
   const handleSearch = (query) => {
     if (query.trim()) {
       navigate(`/?search=${encodeURIComponent(query.trim())}`);
@@ -96,16 +99,68 @@ const Header = () => {
               </motion.button>
 
 {/* Login Button */}
-              <div className="hidden sm:flex items-center gap-3">
-                <Link to="/login">
-                  <Button
-                    variant="secondary"
-                    size="default"
-                    className="hidden sm:flex"
-                  >
-                    Log in
-                  </Button>
-                </Link>
+<div className="hidden sm:flex items-center gap-3">
+                {isAuthenticated && user ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-medium text-sm">
+                        {user.firstName?.[0] || user.emailAddress?.[0]?.toUpperCase() || 'U'}
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium text-gray-900">
+                          {user.firstName || user.emailAddress?.split('@')[0] || 'User'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {user.accounts?.[0]?.companyName || 'Member'}
+                        </span>
+                      </div>
+                      <ApperIcon name="ChevronDown" size={16} className="text-gray-400" />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {isUserDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                        >
+                          <div className="p-3 border-b border-gray-200">
+                            <p className="text-sm font-medium text-gray-900">
+                              {user.firstName} {user.lastName}
+                            </p>
+                            <p className="text-sm text-gray-500">{user.emailAddress}</p>
+                          </div>
+                          <div className="p-2">
+                            <button
+                              onClick={() => {
+                                logout();
+                                setIsUserDropdownOpen(false);
+                              }}
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                            >
+                              <ApperIcon name="LogOut" size={16} />
+                              Sign out
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <Link to="/login">
+                    <Button
+                      variant="secondary"
+                      size="default"
+                      className="hidden sm:flex"
+                    >
+                      Log in
+                    </Button>
+                  </Link>
+                )}
               </div>
 
               {/* Mobile Menu Button */}
@@ -152,15 +207,43 @@ const Header = () => {
                 ))}
                 
 <div className="flex flex-col gap-2 mt-4">
-                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button
-                      variant="secondary"
-                      size="default"
-                      className="w-full"
-                    >
-                      Log in
-                    </Button>
-                  </Link>
+                  {isAuthenticated && user ? (
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-medium">
+                          {user.firstName?.[0] || user.emailAddress?.[0]?.toUpperCase() || 'U'}
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-900">
+                            {user.firstName} {user.lastName}
+                          </span>
+                          <span className="text-sm text-gray-500">{user.emailAddress}</span>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          logout();
+                          setIsMobileMenuOpen(false);
+                        }}
+                        variant="secondary"
+                        size="default"
+                        className="w-full"
+                      >
+                        <ApperIcon name="LogOut" size={16} />
+                        Sign out
+                      </Button>
+                    </div>
+                  ) : (
+                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button
+                        variant="secondary"
+                        size="default"
+                        className="w-full"
+                      >
+                        Log in
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </nav>
             </motion.div>
