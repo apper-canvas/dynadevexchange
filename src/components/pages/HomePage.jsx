@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
-import AuthModal from "@/components/organisms/AuthModal";
 import QuestionList from "@/components/organisms/QuestionList";
 import FilterSidebar from "@/components/organisms/FilterSidebar";
 
@@ -14,7 +13,6 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [tagFilter, setTagFilter] = useState("");
   const [activeTags, setActiveTags] = useState([]);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   // Parse URL parameters
   useEffect(() => {
@@ -179,10 +177,6 @@ const totalQuestions = 1247; // This would come from database
         </div>
       </div>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
     </div>
   );
 };
