@@ -137,7 +137,8 @@ function executeCustomFunction(functionName, user) {
 }
 
 export function verifyRouteAccess(config, user) {
-    // If no config exists or `allow` property does not exists in config, allow access (let React Router handle it)
+    // If no config exists or `allow` property does not exist in config, allow access (let React Router handle it)
+    // This allows anonymous users to access routes without explicit access configuration
     if (!config || !config.allow) {
         return {
             allowed: true,
@@ -161,11 +162,10 @@ export function verifyRouteAccess(config, user) {
         };
     }
 
-    // Otherwise, use the when conditions as before
+// Otherwise, use the when conditions as before
     const whenClause = allowedConfig.when || allowedConfig;
     const { conditions = [], operator = "OR" } = whenClause;
-
-    // Evaluate all conditions
+// Evaluate all conditions - properly handle anonymous users for public routes
     const results = conditions.map(cond => ({
         label: cond.label,
         rule: cond.rule,
@@ -174,11 +174,10 @@ export function verifyRouteAccess(config, user) {
 
     const failed = results.filter(r => !r.passed);
 
-    // Apply operator logic
+    // Apply operator logic - allow anonymous access for public routes
     const allowed = operator === "OR"
         ? results.some(r => r.passed)
         : results.every(r => r.passed);
-
     // Determine redirect
     let redirectTo = null;
     if (!allowed) {
