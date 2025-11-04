@@ -5,10 +5,8 @@ import { useSelector } from "react-redux";
 import { useAuth } from "@/layouts/Root";
 import ApperIcon from "@/components/ApperIcon";
 import Button from "@/components/atoms/Button";
-import AuthModal from "@/components/organisms/AuthModal";
 import SearchBar from "@/components/molecules/SearchBar";
 const Header = () => {
-const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const { logout } = useAuth();
@@ -21,9 +19,7 @@ const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     }
   };
 
-  const handleAskQuestion = () => {
-    // Check if user is authenticated
-// Navigation handled by route protection
+const handleAskQuestion = () => {
     navigate("/ask");
   };
 
@@ -251,10 +247,6 @@ const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
         </AnimatePresence>
       </header>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
     </>
   );
 };
