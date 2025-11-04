@@ -1,3 +1,4 @@
+[
 {
   "/": {
     "allow": {
@@ -11,86 +12,14 @@
       }
     }
   },
-  "/questions/:id": {
-    "allow": {
-      "when": {
-        "conditions": [
-          {
-            "label": "Question viewing is public",
-            "rule": "public"
-          }
-        ]
-      }
-    }
-  },
   "/ask": {
     "allow": {
+      "redirectOnDeny": "/login",
       "when": {
         "conditions": [
           {
             "label": "User must be logged in to ask questions",
             "rule": "authenticated"
-          }
-        ]
-      },
-      "redirectOnDeny": "/login"
-    }
-  },
-  "/tags": {
-    "allow": {
-      "when": {
-        "conditions": [
-          {
-            "label": "Tag browsing is public",
-            "rule": "public"
-          }
-        ]
-      }
-    }
-  },
-  "/users": {
-    "allow": {
-      "when": {
-        "conditions": [
-          {
-            "label": "User list is public",
-            "rule": "public"
-          }
-        ]
-      }
-    }
-  },
-  "/users/:id": {
-    "allow": {
-      "when": {
-        "conditions": [
-          {
-            "label": "User profiles are public",
-            "rule": "public"
-          }
-        ]
-      }
-    }
-  },
-  "/login": {
-    "allow": {
-      "when": {
-        "conditions": [
-          {
-            "label": "Login page is public",
-            "rule": "public"
-          }
-        ]
-      }
-    }
-  },
-  "/signup": {
-    "allow": {
-      "when": {
-        "conditions": [
-          {
-            "label": "Signup page is public",
-            "rule": "public"
           }
         ]
       }
@@ -101,7 +30,7 @@
       "when": {
         "conditions": [
           {
-            "label": "Auth callback is public",
+            "label": "Callback page is public",
             "rule": "public"
           }
         ]
@@ -120,12 +49,12 @@
       }
     }
   },
-  "/reset-password/:appId/:fields": {
+  "/login": {
     "allow": {
       "when": {
         "conditions": [
           {
-            "label": "Password reset is public",
+            "label": "Login page is public",
             "rule": "public"
           }
         ]
@@ -143,5 +72,224 @@
         ]
       }
     }
+  },
+  "/questions/:id": {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Question details are public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/reset-password/:appId/:fields": {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Password reset is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/signup": {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Signup page is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/tags": {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Tags page is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/users": {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Users page is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/users/:id": {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "User details are public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
   }
-}
+},
+  "/",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Homepage is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/questions/:id",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Question viewing is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/ask",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "User must be logged in to ask questions",
+            "rule": "authenticated"
+          }
+        ]
+      },
+      "redirectOnDeny": "/login"
+    }
+  },
+  "/tags",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Tag browsing is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/users",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "User list is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/users/:id",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "User profiles are public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/login",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Login page is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/signup",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Signup page is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/callback",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Auth callback is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/error",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Error page is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/reset-password/:appId/:fields",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Password reset is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  },
+  "/prompt-password/:appId/:emailAddress/:provider",":", {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Password prompt is public",
+            "rule": "public"
+          }
+        ]
+      }
+    }
+  }
+
+]
